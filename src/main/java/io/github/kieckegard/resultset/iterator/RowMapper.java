@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.kieckegard.unimed.batch.streams;
+package io.github.kieckegard.resultset.iterator;
 
 import java.sql.ResultSet;
 
@@ -19,5 +19,5 @@ public interface RowMapper<T> {
      * @param resultSet
      * @return 
      */
-    T map(final ResultSet resultSet) throws RuntimeException;
+    T map(final ResultSet resultSet) throws RowMapperException;
 }

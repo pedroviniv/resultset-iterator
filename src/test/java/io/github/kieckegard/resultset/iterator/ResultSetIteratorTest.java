@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.kieckegard.unimed.batch.streams;
+package io.github.kieckegard.resultset.iterator;
 
+import io.github.kieckegard.resultset.iterator.ResultSetIterator;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +24,7 @@ import org.mockito.Mockito;
  */
 public class ResultSetIteratorTest {
 
-    private int cursorIndex = -1;
+    private int cursorIndex = -1; 
     private static final List<List<Object>> TABLE = Arrays.asList(
             row(1L, "A", 2000d),
             row(2L, "B", 3000d),

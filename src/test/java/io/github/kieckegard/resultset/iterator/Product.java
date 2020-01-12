@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.kieckegard.unimed.batch.streams;
+package io.github.kieckegard.resultset.iterator;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -43,7 +43,7 @@ public class Product {
         }
 
         public Product build() {
-            return new io.github.kieckegard.unimed.batch.streams.Product(id, name, price);
+            return new io.github.kieckegard.resultset.iterator.Product(id, name, price);
         }
     }
 

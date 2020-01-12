@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.kieckegard.unimed.batch.streams;
+package io.github.kieckegard.resultset.iterator;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
