@@ -5,7 +5,6 @@
  */
 package io.github.kieckegard.resultset.iterator;
 
-import io.github.kieckegard.resultset.iterator.ResultSetIterator;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
