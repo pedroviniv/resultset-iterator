@@ -23,7 +23,7 @@ import org.mockito.Mockito;
  */
 public class ResultSetIteratorTest {
 
-    private int cursorIndex = -1; 
+    private int cursorIndex = -1;
     private static final List<List<Object>> TABLE = Arrays.asList(
             row(1L, "A", 2000d),
             row(2L, "B", 3000d),
@@ -107,15 +107,14 @@ public class ResultSetIteratorTest {
         final ResultSet resultSet = this.getResultSet();
 
         final ResultSetIterator<Product> resultSetIterator = new ResultSetIterator<>(resultSet, this::toProduct);
-
-        for(int i = 0; i < ROWS_NUM; i++) {
+        for (int i = 0; i < ROWS_NUM; i++) {
             resultSetIterator.next();
-            
+
             if (i == ROWS_NUM) {
                 assertFalse(resultSetIterator.hasNext());
                 break;
             }
-            
+
             assertTrue(resultSetIterator.hasNext());
         }
     }

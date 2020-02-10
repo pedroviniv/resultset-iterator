@@ -5,9 +5,11 @@
  */
 package io.github.kieckegard.resultset.iterator;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 /**
  * A special implementation of {@link Iterator} which is backed by a ResultSet.
@@ -16,7 +18,7 @@ import java.util.Iterator;
  * the Streams api.
  * @author Pedro Arthur <pfernandesvasconcelos@gmail.com>
  */
-public class ResultSetIterator<T> implements Iterator<T> {
+public class ResultSetIterator<T> implements CloseableIterator<T> {
 
     /**
      * The wrapped {@code ResultSet}.
@@ -24,6 +26,21 @@ public class ResultSetIterator<T> implements Iterator<T> {
     private final ResultSet rs;
     private final RowMapper<T> rowMapper;
 
+    /**
+     * connection that generated the resultSet
+     */
+    private Connection connection;
+    
+    /**
+     * consumer which closes the connection when the iterator is used with
+     * try with resources.
+     * 
+     * it no closer is passed while ResultSetIterator construction,
+     * it'll use the default connection closer
+     * which is {@link ResultSetIterator#closeConnection(java.sql.Connection) }.
+     */
+    private ConnectionCloser connectionCloser = this::closeConnection;
+    
     /**
      * Constructor for ResultSetIterator.
      * @param rs Wrap this {@code ResultSet} in an {@code Iterator}.
@@ -33,6 +50,43 @@ public class ResultSetIterator<T> implements Iterator<T> {
     public ResultSetIterator(final ResultSet rs, final RowMapper rowMapper) {
         this.rs = rs;
         this.rowMapper = rowMapper;
+    }
+
+    /**
+     * Constructor for ResultSetIterator
+     * @param rs Wrap this {@code ResultSet} in an {@code Iterator}
+     * @param rowMapper A mapper that maps the current entry of the resultSet into
+     * a instance of T.
+     * @param connection connection that will be released after the resultSet navigation
+     */
+    public ResultSetIterator(ResultSet rs, RowMapper<T> rowMapper, Connection connection) {
+        this.rs = rs;
+        this.rowMapper = rowMapper;
+        this.connection = connection;
+    }
+    
+    /**
+     * Constructor for ResultSetIterator
+     * @param rs Wrap this {@code ResultSet} in an {@code Iterator}
+     * @param rowMapper A mapper that maps the current entry of the resultSet into
+     * a instance of T.
+     * @param connection connection that will be released after the resultSet navigation
+     * @param connectionCloser consumer that will release the connection after resultSet usage
+     */
+    public ResultSetIterator(ResultSet rs, RowMapper<T> rowMapper, Connection connection, ConnectionCloser connectionCloser) {
+        this.rs = rs;
+        this.rowMapper = rowMapper;
+        
+        if (this.connection == null) {
+            throw new IllegalArgumentException("provided connection must not be null");
+        }
+        
+        this.connection = connection;
+        this.connectionCloser = connectionCloser;
+    
+        if (this.connectionCloser == null) {
+            throw new IllegalArgumentException("provided connection closer must not be null");
+        }
     }
 
     /**
@@ -94,6 +148,22 @@ public class ResultSetIterator<T> implements Iterator<T> {
     
     protected void rethrow(final String msg, final SQLException ex) {
         throw new ResultSetIteratorException(msg, ex);
+    }
+    
+    /**
+     * default method that closes the current connection
+     * @param connection
+     * @throws SQLException 
+     */
+    private void closeConnection(final Connection connection) throws SQLException {
+        connection.close();
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (connection != null && !connection.isClosed()) {
+            this.connectionCloser.close(connection);
+        }
     }
 
 }
